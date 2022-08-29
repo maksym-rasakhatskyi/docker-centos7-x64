@@ -13,7 +13,10 @@ RUN yum install -y ncftp git subversion wget vim-common gdb boost-devel libicu-d
 
 RUN yum clean all
 
-RUN cd /tmp && wget --no-check-certificate https://www.openssl.org/source/openssl-1.1.1n.tar.gz && tar xf openssl-1.1.1n.tar.gz && cd openssl-1.1.1n && ./config --libdir=/lib64 && make && make install && cd .. && rm -rf openssl-1.1.1n && rm -f openssl-1.1.1n.tar.gz && ldconfig
+# Build and Install openssl
+RUN cd /tmp && wget --no-check-certificate https://www.openssl.org/source/openssl-1.1.1n.tar.gz && tar xf openssl-1.1.1n.tar.gz && cd openssl-1.1.1n && \
+./config --libdir=/lib64 && \
+make && make install && cd .. && rm -rf openssl-1.1.1n && rm -f openssl-1.1.1n.tar.gz && ldconfig
 
 RUN cd /tmp && wget https://github.com/Kitware/CMake/releases/download/v3.14.5/cmake-3.14.5.tar.gz && tar xf cmake-3.14.5.tar.gz && cd /tmp/cmake-3.14.5 && \
 ./bootstrap -- -DCMAKE_BUILD_TYPE:STRING=Release && make && make install && cd ../ && rm -rf cmake-3.14.5 && rm -rf cmake-3.14.5.tar.gz
@@ -21,7 +24,9 @@ RUN cd /tmp && wget https://github.com/Kitware/CMake/releases/download/v3.14.5/c
 RUN curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/mssql-release.repo
 
 #Build&Install boost 1.66
-RUN cd /tmp && wget http://sourceforge.net/projects/boost/files/boost/1.66.0/boost_1_66_0.tar.gz && tar zxvf boost_1_66_0.tar.gz && cd boost_1_66_0 && ./bootstrap.sh --libdir=/lib64 --includedir=/usr/include --with-icu --with-libraries=system,filesystem,thread,regex,locale,chrono,program_options,date_time,serialization --prefix=/opt/boost_1_66_0 && ./b2 && ./b2 install && cd -
+RUN cd /tmp && wget http://sourceforge.net/projects/boost/files/boost/1.66.0/boost_1_66_0.tar.gz && tar zxvf boost_1_66_0.tar.gz && cd boost_1_66_0 && \
+./bootstrap.sh --libdir=/lib64 --includedir=/usr/include:/usr/local/include --with-icu --with-libraries=system,filesystem,thread,regex,locale,chrono,program_options,date_time,serialization --prefix=/opt/boost_1_66_0 && \
+./b2 && ./b2 install && cd -
 
 #Install MS ODBC Driver and Libraries
 
