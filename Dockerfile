@@ -71,3 +71,4 @@ RUN cd $GOSRC/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway && 
 RUN cd $GOSRC/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger && go install
 RUN cd $GOSRC/github.com/golang/protobuf/protoc-gen-go && go install
 
+###
