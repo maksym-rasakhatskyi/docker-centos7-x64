@@ -25,7 +25,7 @@ RUN curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos
 
 #Build&Install boost 1.66
 RUN cd /tmp && wget http://sourceforge.net/projects/boost/files/boost/1.66.0/boost_1_66_0.tar.gz && tar zxvf boost_1_66_0.tar.gz && cd boost_1_66_0 && \
-./bootstrap.sh --libdir=/lib64 --includedir=/usr/include:/usr/local/include --with-icu --with-libraries=system,filesystem,thread,regex,locale,chrono,program_options,date_time,serialization --prefix=/opt/boost_1_66_0 && \
+./bootstrap.sh --libdir=/lib64 --includedir=/usr/local/include --with-icu --with-libraries=system,filesystem,thread,regex,locale,chrono,program_options,date_time,serialization --prefix=/opt/boost_1_66_0 && \
 ./b2 && ./b2 install && cd -
 
 #Install MS ODBC Driver and Libraries
