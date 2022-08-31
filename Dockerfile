@@ -9,7 +9,7 @@ RUN yum install -y epel-release
 RUN yum groups mark convert
 RUN yum groupinstall -y 'Development Tools'
 
-RUN yum install -y ncftp git subversion wget vim-common gdb libicu-devel zlib-devel openssl-devel libuuid-devel cryptopp-devel redhat-lsb-core rpmrebuild gtest-devel bison valgrind which patchelf python3
+RUN yum install -y ncftp git subversion wget vim-common gdb libicu-devel openssl-devel libuuid-devel cryptopp-devel redhat-lsb-core rpmrebuild gtest-devel bison valgrind which patchelf python3
 
 RUN yum clean all
 
@@ -22,6 +22,11 @@ RUN cd /tmp && wget https://github.com/Kitware/CMake/releases/download/v3.14.5/c
 ./bootstrap -- -DCMAKE_BUILD_TYPE:STRING=Release && make && make install && cd ../ && rm -rf cmake-3.14.5 && rm -rf cmake-3.14.5.tar.gz
 
 RUN curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/mssql-release.repo
+
+#Build and Install zlib 1.2.12
+RUN cd /tmp && wget https://www.zlib.net/zlib-1.2.12.tar.gz && tar zxvf zlib-1.2.12.tar.gz && cd zlib-1.2.12 && \
+./configure --libdir=/usr/lib64/ --includedir=/usr/include && \
+make && make install && ldconfig &&  cd ../ && rm -rf zlib-1.2.12 && rm -rf zlib-1.2.12.tar.gz
 
 #Build&Install boost 1.66
 RUN cd /tmp && wget http://sourceforge.net/projects/boost/files/boost/1.66.0/boost_1_66_0.tar.gz && tar zxvf boost_1_66_0.tar.gz && cd boost_1_66_0 && \
