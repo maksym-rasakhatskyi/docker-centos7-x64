@@ -39,9 +39,9 @@ RUN ACCEPT_EULA=Y yum -y install mssql-tools
 #Install postgres odbc and replace relative path by full path to odbc driver (fix not found odbc driver error)
 RUN yum install -y postgresql-odbc postgresql-contrib 
 
-# COPY resources /srv/resources
+COPY resources /srv/resources
 
-# RUN odbcinst -i -d -f /srv/resources/postgresql.ini
+RUN odbcinst -i -d -f /srv/resources/postgresql.ini
 
 #Build POCO library
 RUN cd /tmp && git clone -b "poco-1.9.0" https://github.com/pocoproject/poco.git && cd poco/ && mkdir cmake-build && cd cmake-build && \
