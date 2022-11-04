@@ -14,9 +14,9 @@ RUN yum install -y ncftp git subversion wget vim-common gdb libicu-devel zlib-de
 RUN yum clean all
 
 # Build and Install openssl
-RUN cd /tmp && wget --no-check-certificate https://github.com/openssl/openssl/archive/refs/tags/openssl-3.0.5.tar.gz && tar xf openssl-3.0.5.tar.gz && cd openssl-3.0.5 && \
+RUN cd /tmp && wget --no-check-certificate https://github.com/openssl/openssl/archive/refs/tags/openssl-3.0.5.tar.gz && tar xf openssl-3.0.5.tar.gz && cd openssl-openssl-3.0.5 && \
 ./config --libdir=/lib64 && \
-make && make install && cd .. && rm -rf openssl-3.0.5 && rm -f openssl-3.0.5.tar.gz && ldconfig
+make && make install && cd .. && rm -rf openssl-openssl-3.0.5 && rm -f openssl-3.0.5.tar.gz && ldconfig
 
 RUN cd /tmp && wget https://github.com/Kitware/CMake/releases/download/v3.14.5/cmake-3.14.5.tar.gz && tar xf cmake-3.14.5.tar.gz && cd /tmp/cmake-3.14.5 && \
 ./bootstrap -- -DCMAKE_BUILD_TYPE:STRING=Release && make && make install && cd ../ && rm -rf cmake-3.14.5 && rm -rf cmake-3.14.5.tar.gz
