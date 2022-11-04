@@ -7,9 +7,17 @@ RUN yum -y update && yum clean all
 RUN yum install -y epel-release
 
 RUN yum groups mark convert
-RUN yum groupinstall -y 'Development Tools'
 
-RUN yum install -y ncftp git subversion wget vim-common gdb libicu-devel zlib-devel libuuid-devel cryptopp-devel redhat-lsb-core rpmrebuild gtest-devel bison valgrind which patchelf python3 perl-IPC-Cmd
+# c++14 is needed to build new poco version
+# install c++14
+RUN yum -y install centos-release-scl
+RUN yum -y install devtoolset-7-gcc*
+
+# use shell with c++14
+SHELL [ "/usr/bin/scl", "enable", "devtoolset-7"]
+
+
+RUN yum install -y ncftp git subversion wget vim-common gdb libicu-devel zlib-devel libuuid-devel cryptopp-devel redhat-lsb-core rpmrebuild gtest-devel bison valgrind which patchelf python3 perl-IPC-Cmd libtool
 
 RUN yum clean all
 
@@ -44,7 +52,7 @@ COPY resources /srv/resources
 RUN odbcinst -i -d -f /srv/resources/postgresql.ini
 
 #Build POCO library
-RUN cd /tmp && git clone -b "poco-1.9.0" https://github.com/pocoproject/poco.git && cd poco/ && mkdir cmake-build && cd cmake-build && \
+RUN cd /tmp && git clone -b "poco-1.12.2" https://github.com/pocoproject/poco.git && cd poco/ && mkdir cmake-build && cd cmake-build && \
 sed -i '/project(Poco)/a SET(CMAKE_INSTALL_RPATH "\$ORIGIN")' ../CMakeLists.txt && cmake .. -DCMAKE_BUILD_TYPE=RELEASE && cmake --build . && \
 make DESTDIR=/opt/apriorit-poco all install
  
