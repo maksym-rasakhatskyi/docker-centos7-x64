@@ -9,7 +9,7 @@ RUN yum install -y epel-release
 RUN yum groups mark convert
 RUN yum groupinstall -y 'Development Tools'
 
-RUN yum install -y ncftp git subversion wget vim-common gdb libicu-devel zlib-devel libuuid-devel cryptopp-devel redhat-lsb-core rpmrebuild gtest-devel bison valgrind which patchelf python3
+RUN yum install -y ncftp git subversion wget vim-common gdb libicu-devel zlib-devel libuuid-devel cryptopp-devel redhat-lsb-core rpmrebuild gtest-devel bison valgrind which patchelf python3 perl-IPC-Cmd
 
 RUN yum clean all
 
