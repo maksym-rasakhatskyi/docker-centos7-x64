@@ -7,6 +7,7 @@ RUN yum -y update && yum clean all
 RUN yum install -y epel-release
 
 RUN yum groups mark convert
+RUN yum groupinstall -y 'Development Tools'
 
 # c++14 is needed to build new poco version
 # install c++14
