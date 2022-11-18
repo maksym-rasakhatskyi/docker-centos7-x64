@@ -14,9 +14,6 @@ RUN yum install -y ncftp git subversion wget vim-common gdb libicu-devel zlib-de
 
 RUN yum clean all
 
-# install new gcc with c++14
-RUN cd /tmp && wget http://ftp.mirrorservice.org/sites/sourceware.org/pub/gcc/releases/gcc-6.5.0/gcc-6.5.0.tar.gz && tar zxf gcc-6.5.0.tar.gz && cd gcc-6.5.0 && ./contrib/download_prerequisites && ./configure --disable-multilib --enable-languages=c,c++ && make -j 4 && make install
-
 # Build and Install openssl
 RUN cd /tmp && wget --no-check-certificate https://github.com/openssl/openssl/archive/refs/tags/openssl-3.0.5.tar.gz && tar xf openssl-3.0.5.tar.gz && cd openssl-openssl-3.0.5 && \
 ./config --libdir=/lib64 && \
@@ -72,9 +69,15 @@ RUN cd $GOSRC/github.com/golang/protobuf/protoc-gen-go && go install
 
 ############
 
+# use shell with c++14 to build poco
+RUN yum remove gcc-base-debuginfo-4.8.5-44.el7.x86_64
+RUN yum -y install centos-release-scl
+RUN yum -y install devtoolset-7-gcc*
+
 # Enter bash and Build POCO library
+SHELL [ "/usr/bin/scl", "enable", "devtoolset-7"]
 RUN cd /tmp && git clone -b "poco-1.12.2" https://github.com/pocoproject/poco.git && cd poco/ && mkdir cmake-build && cd cmake-build && \
 sed -i '/project(Poco)/a SET(CMAKE_INSTALL_RPATH "\$ORIGIN")' ../CMakeLists.txt && cmake .. -DCMAKE_BUILD_TYPE=RELEASE && cmake --build . && \
 make DESTDIR=/opt/apriorit-poco all install 
-
+SHELL ["/bin/bash", "-c"]
 
