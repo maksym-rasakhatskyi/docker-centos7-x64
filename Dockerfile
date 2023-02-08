@@ -15,9 +15,9 @@ RUN yum install -y ncftp git subversion wget vim-common gdb libicu-devel zlib-de
 RUN yum clean all
 
 # Build and Install openssl
-RUN cd /tmp && wget --no-check-certificate https://github.com/openssl/openssl/archive/refs/tags/openssl-3.0.7.tar.gz && tar xf openssl-3.0.7.tar.gz && cd openssl-openssl-3.0.7 && \
+RUN cd /tmp && wget --no-check-certificate https://www.openssl.org/source/openssl-1.1.1t.tar.gz && tar xf openssl-1.1.1t.tar.gz && cd openssl-1.1.1t && \
 ./config --libdir=/lib64 && \
-make && make install && cd .. && rm -rf openssl-openssl-3.0.7 && rm -f openssl-3.0..tar.gz && ldconfig
+make && make install && cd .. && rm -rf openssl-1.1.1t && rm -f openssl-1.1.1t.tar.gz && ldconfig
 
 RUN cd /tmp && wget https://github.com/Kitware/CMake/releases/download/v3.14.5/cmake-3.14.5.tar.gz && tar xf cmake-3.14.5.tar.gz && cd /tmp/cmake-3.14.5 && \
 ./bootstrap -- -DCMAKE_BUILD_TYPE:STRING=Release && make && make install && cd ../ && rm -rf cmake-3.14.5 && rm -rf cmake-3.14.5.tar.gz
@@ -91,5 +91,5 @@ RUN update-alternatives --install /usr/lib64/libstdc++.so.6 libstdc++.so.6 /usr/
 
 RUN cd /tmp && git clone -b "poco-1.12.4" https://github.com/pocoproject/poco.git && cd poco/ && mkdir cmake-build && cd cmake-build && \
 sed -i '/project(Poco)/a SET(CMAKE_INSTALL_RPATH "\$ORIGIN")' ../CMakeLists.txt && \
-../configure --include-path=/usr/local/include/openssl --library-path=/lib64/libssl.so.3;/lib64/libcrypto.so.3 && \
+../configure --include-path=/usr/local/include/openssl --library-path="/lib64/libssl.so.3;/lib64/libcrypto.so.3" && \
 cmake .. -DCMAKE_BUILD_TYPE=RELEASE && cmake --build . && make DESTDIR=/opt/apriorit-poco all install 
