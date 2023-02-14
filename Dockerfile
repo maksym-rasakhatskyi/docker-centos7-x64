@@ -10,9 +10,35 @@ RUN yum groups mark convert
 RUN yum groupinstall -y 'Development Tools'
 
 RUN yum -y install install pcre pcre-devel
-RUN yum install -y ncftp git subversion wget vim-common gdb libicu-devel zlib-devel libuuid-devel cryptopp-devel redhat-lsb-core rpmrebuild gtest-devel bison valgrind which patchelf python3 perl-IPC-Cmd libtool openssh openssh-server
+RUN yum install -y ncftp git subversion wget vim-common gdb libicu-devel zlib-devel libuuid-devel redhat-lsb-core rpmrebuild gtest-devel bison valgrind which patchelf python3 perl-IPC-Cmd libtool openssh openssh-server
 
 RUN yum clean all
+
+
+
+######################## install GCC 10
+
+RUN yum install -y libmpc-devel mpfr-devel gmp-devel 
+RUN yum install -y zlib-devel*
+RUN cd /tmp && wget https://ftp.gnu.org/gnu/gcc/gcc-10.1.0/gcc-10.1.0.tar.gz && tar xf gcc-10.1.0.tar.gz && cd gcc-10.1.0 && \
+./configure --with-system-zlib --disable-multilib --enable-languages=c,c++ && \
+make -j4 && make install
+
+RUN mv /usr/bin/gcc /usr/bin/gcc_old
+RUN mv /usr/bin/g++ /usr/bin/g++_old
+
+RUN ln -s /usr/local/bin/gcc /usr/bin/gcc
+RUN ln -s /usr/local/bin/g++ /usr/bin/g++
+
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/local/bin/gcc 60 \
+                        --slave   /usr/bin/g++ g++ /usr/local/bin/g++
+					
+RUN update-alternatives --install /usr/lib64/libstdc++.so.6 libstdc++.so.6 /usr/local/lib64/libstdc++.so.6 60 
+
+ENV CC=/usr/local/bin/gcc    
+ENV CXX=/usr/local/bin/g++
+
+####################
 
 # Build and Install openssl
 RUN cd /tmp && wget --no-check-certificate https://github.com/openssl/openssl/archive/refs/tags/openssl-3.0.7.tar.gz && tar xf openssl-3.0.7.tar.gz && cd openssl-openssl-3.0.7 && \
@@ -23,6 +49,9 @@ RUN cd /tmp && wget https://github.com/Kitware/CMake/releases/download/v3.14.5/c
 ./bootstrap -- -DCMAKE_BUILD_TYPE:STRING=Release && make && make install && cd ../ && rm -rf cmake-3.14.5 && rm -rf cmake-3.14.5.tar.gz
 
 RUN curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/mssql-release.repo
+
+# install cryptopp
+RUN cd /tmp && wget https://www.cryptopp.com/cryptopp810.zip && unzip -aoq cryptopp810.zip -d cryptopp && cd cryptopp && make && make install && cd .. && rm -rf cryptopp && rm -f cryptopp810.zip && ldconfig
 
 #Build&Install boost 1.80
 RUN cd /tmp && wget http://sourceforge.net/projects/boost/files/boost/1.80.0/boost_1_80_0.tar.gz && tar zxvf boost_1_80_0.tar.gz && cd boost_1_80_0 && \
@@ -69,27 +98,9 @@ RUN cd $GOSRC/github.com/golang/protobuf/protoc-gen-go && go install
 
 ############
 
-RUN yum install -y libmpc-devel mpfr-devel gmp-devel 
-RUN yum install -y zlib-devel*
-RUN cd /tmp && wget https://ftp.gnu.org/gnu/gcc/gcc-10.1.0/gcc-10.1.0.tar.gz && tar xf gcc-10.1.0.tar.gz && cd gcc-10.1.0 && \
-./configure --with-system-zlib --disable-multilib --enable-languages=c,c++ && \
-make -j4 && make install
 
-RUN mv /usr/bin/gcc /usr/bin/gcc_old
-RUN mv /usr/bin/g++ /usr/bin/g++_old
 
-RUN ln -s /usr/local/bin/gcc /usr/bin/gcc
-RUN ln -s /usr/local/bin/g++ /usr/bin/g++
-
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/local/bin/gcc 60 \
-                        --slave   /usr/bin/g++ g++ /usr/local/bin/g++
-					
-RUN update-alternatives --install /usr/lib64/libstdc++.so.6 libstdc++.so.6 /usr/local/lib64/libstdc++.so.6 60 
-
-ENV CC=`which gcc`    
-ENV CXX=`which g++`
-
-RUN cd /tmp && git clone -b "poco-1.12.4" https://github.com/pocoproject/poco.git && cd poco/ && mkdir cmake-build && cd cmake-build && \
+RUN cd /tmp && git clone -b "poco-1.12.2" https://github.com/pocoproject/poco.git && cd poco/ && mkdir cmake-build && cd cmake-build && \
 sed -i '/project(Poco)/a SET(CMAKE_INSTALL_RPATH "\$ORIGIN")' ../CMakeLists.txt && \
-../configure --include-path=/usr/local/include/openssl --library-path=/lib64/libssl.so.3;/lib64/libcrypto.so.3 && \
+../configure --include-path=/usr/local/include/openssl --library-path="/lib64/libssl.so.3;/lib64/libcrypto.so.3" && \
 cmake .. -DCMAKE_BUILD_TYPE=RELEASE && cmake --build . && make DESTDIR=/opt/apriorit-poco all install 
