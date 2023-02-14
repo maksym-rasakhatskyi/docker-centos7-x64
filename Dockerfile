@@ -81,13 +81,13 @@ RUN mv /usr/bin/g++ /usr/bin/g++_old
 RUN ln -s /usr/local/bin/gcc /usr/bin/gcc
 RUN ln -s /usr/local/bin/g++ /usr/bin/g++
 
-RUN export CC=`which gcc`    
-RUN export CXX=`which g++`
-
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/local/bin/gcc 60 \
                         --slave   /usr/bin/g++ g++ /usr/local/bin/g++
 					
 RUN update-alternatives --install /usr/lib64/libstdc++.so.6 libstdc++.so.6 /usr/local/lib64/libstdc++.so.6 60 
+
+ENV CC=`which gcc`    
+ENV CXX=`which g++`
 
 RUN cd /tmp && git clone -b "poco-1.12.4" https://github.com/pocoproject/poco.git && cd poco/ && mkdir cmake-build && cd cmake-build && \
 sed -i '/project(Poco)/a SET(CMAKE_INSTALL_RPATH "\$ORIGIN")' ../CMakeLists.txt && \
